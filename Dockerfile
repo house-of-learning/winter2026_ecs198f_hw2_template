@@ -1,11 +1,10 @@
-FROM: debian:bookworm
+FROM debian:bookworm
 
-ENV PATH="/root/miniconda3/bin:${PATH}"
-ARG PATH="/root/miniconda3/bin:${PATH}"
+ENV PATH="/opt/miniconda/bin:$PATH"
 
-# Install wget
+# Install wget and git
 RUN apt-get update && \
-    apt-get install -y wget && \
+    apt-get install -y wget git ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -18,13 +17,10 @@ RUN arch=$(uname -m) && \
     else \
     exit 1; \
     fi && \
-    wget $MINICONDA_URL -O miniconda.sh && \
+    wget $MINICONDA_URL -O /tmp/miniconda.sh && \
     mkdir -p /root/.conda && \
-    bash miniconda.sh -b -p /root/miniconda3 && \
-    rm -f miniconda.sh
-
-# Install git
-RUN apt-get install -y git
+    bash /tmp/miniconda.sh -b -p /opt/miniconda && \
+    rm -f /tmp/miniconda.sh
 
 # Install repo from instructions
-RUN git clone https://github.com/dbarnett/python-helloworld .
+RUN git clone https://github.com/dbarnett/python-helloworld ./python-helloworld
